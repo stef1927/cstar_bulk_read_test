@@ -33,7 +33,7 @@ columnspec:
     size: fixed(${value_size})
 
 insert:
-  partitions: fixed(1)  # the number of partitions
+  partitions: fixed(10)  # the number of partitions
   select: fixed(1)/1  # the probability of visiting any row in the partition
   batchtype: UNLOGGED
 
