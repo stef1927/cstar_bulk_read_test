@@ -6,11 +6,11 @@ keyspace_definition: |
 
 # A table with a partitions of 100 rows where each row has two integer keys and two values of 50 bytes each
 # Compaction and compression are also disabled so we can better benchmark the read operations
-table: value5M_cluster10
+table: value5m_cluster10
 
 table_definition:
 
-  CREATE TABLE value5M_cluster10 (
+  CREATE TABLE value5m_cluster10 (
     pk int,
     c1 int,
     v1 text,
@@ -27,10 +27,10 @@ columnspec:
     cluster: fixed(10)
 
   - name: v1
-    size: fixed(5M)
+    size: fixed(5m)
 
   - name: v2
-    size: fixed(5M)
+    size: fixed(5m)
 
 insert:
   partitions: fixed(10)  # the number of partitions
@@ -39,7 +39,7 @@ insert:
 
 queries:
   single_part_query:
-    cql: select * from value5M_cluster10 where pk = ?
+    cql: select * from value5m_cluster10 where pk = ?
     fields: samerow
 
 token_range_queries:

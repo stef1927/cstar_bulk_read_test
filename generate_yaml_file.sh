@@ -2,8 +2,8 @@
 
 export page_size=5000
 
-for cs in $( echo "1 10 100 1K" ); do
-	for vs in $( echo "50 500 5K 500K 5M" ); do
+for cs in $( echo "1 10 100 1k" ); do
+	for vs in $( echo "50 500 5k 500k 5m" ); do
 		export value_size=$vs
 		export clustering_size=$cs
 		export table_name=value${value_size}_cluster${clustering_size}
