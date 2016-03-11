@@ -15,9 +15,7 @@ table_definition:
     c1 int,
     v1 text,
     v2 text,
-    PRIMARY KEY(pk, c1))
-  WITH compaction = { 'class':'SizeTieredCompactionStrategy', 'enabled':false }
-  AND compression = {};
+    PRIMARY KEY(pk, c1));
 
 
 columnspec:
