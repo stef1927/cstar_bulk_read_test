@@ -43,12 +43,12 @@ queries:
 token_range_queries:
   all_columns_tr_query: 
     columns: '*'
-    page_size: 5000
+    page_size: 100
 
   c1_v1_v2_tr_query:
     columns: c1, v1, v2
-    page_size: 5000
+    page_size: 100
 
   v1_v2_tr_query:
     columns: v1, v2
-    page_size: 5000
+    page_size: 100
