@@ -6,11 +6,11 @@ keyspace_definition: |
 
 # A table with a partitions of 100 rows where each row has two integer keys and two values of 50 bytes each
 # Compaction and compression are also disabled so we can better benchmark the read operations
-table: value500_cluster1k
+table: data_1_kbyte
 
 table_definition:
 
-  CREATE TABLE value500_cluster1k (
+  CREATE TABLE data_1_kbyte (
     pk int,
     c1 int,
     v1 text,
@@ -22,13 +22,13 @@ columnspec:
   - name: pk
 
   - name: c1
-    cluster: fixed(1k)
+    cluster: fixed(1)
 
   - name: v1
-    size: fixed(500)
+    size: fixed(512)
 
   - name: v2
-    size: fixed(500)
+    size: fixed(512)
 
 insert:
   partitions: fixed(1)  # the number of partitions
@@ -37,7 +37,7 @@ insert:
 
 queries:
   single_part_query:
-    cql: select * from value500_cluster1k where pk = ?
+    cql: select * from data_1_kbyte where pk = ?
     fields: samerow
 
 token_range_queries:
