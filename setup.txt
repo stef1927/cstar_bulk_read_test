@@ -1,0 +1,64 @@
+Launching a GCE instance:
+=========================
+
+c launch -i n1-standard-8 ste 1
+c install -i source --branch-name=trunk --cass-git-repo=https://github.com/stef1927/cassandra.git -n 256 ste cassandra
+#c start ste cassandra
+
+Launching an OpenStack instance:
+================================
+
+c launch -i m1.xlarge ste 1
+c install -i source --branch-name=trunk --cass-git-repo=https://github.com/stef1927/cassandra.git -n 256 ste cassandra
+#c start ste cassandra
+
+
+Running flight recorder:
+=========================
+
+You need to specify "-XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=settings=profile-advanced -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints"
+then use jcmd pid JFR.start and JFR.dump. 
+To start immediately instead use the options above and:
+"-XX:StartFlightRecording=delay=20s,duration=60s,name=MyRecording,filename=C:\demo\myrecording.jfr,settings=profile"
+Generally to set options:
+"-XX:FlightRecorderOptions=parameter=value"
+the most imprtant is the profile:
+"settings=profile" where profiles are .jfc files located in JAVA_HOME/jre/lib/jfr, you can edit them with jmc, at a minimum set I/O sampling to 1 ms
+for other options see http://docs.oracle.com/javase/7/docs/technotes/tools/windows/java.html
+Use "jmc" to launch Java missing control.
+
+Here are the setup commands:
+export JVM_OPTS="-XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=settings=/home/automaton/cassandra-src/profile-advanced.jfc -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints"
+c scp ste 0 /usr/lib/jvm/java-8-oracle/jre/lib/jfr/profile-advanced.jfc /usr/lib/jvm/jdk1.8.0_40/jre/lib/jfr/profile-advanced.jfc
+alias jcmd=/usr/lib/jvm/jdk1.8.0_40/bin/jcmd
+jcmd <pid> JFR.start
+jcmd <pid> JFR.dump recording=1 filepath=cassandra.jfr
+c scp ste 0 --remote /home/stefi/Documents/tests/9259/cassandra.jfr /home/automaton/cassandra-src/cassandra.jfr
+
+
+Other perf tools:
+===================
+
+sudo apt-get install linux-tools-common
+sudo apt-get install linux-tools-3.19.0-28-generic linux-cloud-tools-3.19.0-28-generic
+
+sudo modprobe msr
+sudo chmod o+r /dev/cpu/*/msr
+
+perf stat -d -d -d java ....
+
+----
+
+git clone https://github.com/rrze-likwid/likwid.git
+
+#DEFAULT_JVM_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -XX:LogFile=jvm.log "
+#DEFAULT_JVM_OPTS="$DEFAULT_JVM_OPTS -XX:+PrintAssembly -XX:+PrintInterpreter -XX:+PrintNMethods -XX:+PrintNativeNMethods "
+#DEFAULT_JVM_OPTS="$DEFAULT_JVM_OPTS -XX:+PrintSignatureHandlers -XX:+PrintAdapterHandlers; -XX:+PrintStubCode -XX:+PrintCompilation "
+#DEFAULT_JVM_OPTS="$DEFAULT_JVM_OPTS -XX:+PrintInlining -XX:+TraceClassLoading -XX:PrintAssemblyOptions=syntax"
+
+java -jar build/libs/mechanical-sympathy-0.1-SNAPSHOT-jmh.jar -wi 3 -i 1 -r 1 -f 1 -prof perfasm BranchBenchmark
+perf stat java -jar build/libs/mechanical-sympathy-0.1-SNAPSHOT-jmh.jar -wi 3 -i 1 -r 1 -f 1 BranchBenchmark.testUnPredictableBranch
+
+Likwid:
+-------
+likwid-perfctr -C 1 -g BRANCH 'java -jar build/libs/mechanical-sympathy-0.1-SNAPSHOT-jmh.jar -wi 0 -i 10 -r 1 -f 0 -o out.txt .*BranchBenchmark.testPredictable*'
