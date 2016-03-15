@@ -22,13 +22,14 @@ done
 
 value_sizes=("512" "50")
 clustering_sizes=("100" "1000")
+page_sizes=("1000" "10000")
 for i in `seq 0 1`
 do
 	export clustering_size=${clustering_sizes[$i]}
 	export value_size=${value_sizes[$i]}
 	name="100_kbytes_with_${clustering_size}_rows"
 	export table_name="data_${name}"
-	export page_size="10"
+	export page_size=${page_sizes[$i]}
 
 	echo "Generating ${table_name}"
 	envsubst < bulk_read_template.yaml > bulk_read_${name}.yaml
